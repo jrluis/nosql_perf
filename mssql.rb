@@ -13,21 +13,24 @@ def f val
   return val
 end
 
-host = '10.228.241.244'
-client = TinyTds::Client.new :username => 'sa', :password => 'secret', :host => host
+def create_client  
+  return TinyTds::Client.new :username => 'sa', :password => 'secret', :host => '10.224.69.62'
+end
+
+client = create_client
 
 result = client.execute "use nosql_perf"
 result.do
 
 insert_benchmark = -> do  
-  thread_count = 2
+  thread_count = 64
   threads = []
   
   page_size = postal_codes.length / thread_count
   
   (0..thread_count).each do |i|
     threads[i] = Thread.new do
-      tclient = TinyTds::Client.new :username => 'sa', :password => 'secret', :host => host
+      tclient = create_client
       
       result = tclient.execute "use nosql_perf"
       result.do
@@ -57,14 +60,14 @@ insert_benchmark = -> do
 end
 
 query_benchmark = -> do
-  thread_count = 2
+  thread_count = 64
   threads = []
   
   page_size = postal_codes.length / thread_count
   
   (0..thread_count).each do |i|
     threads[i] = Thread.new do
-      tclient = TinyTds::Client.new :username => 'sa', :password => 'secret', :host => host
+      tclient = create_client
       
       result = tclient.execute "use nosql_perf"
       result.do

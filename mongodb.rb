@@ -8,19 +8,24 @@ puts "Building data cache..."
 postal_codes = CTT::load_postal_codes
 postal_codes.collect! { |postal_code| postal_code.to_hash }
 
-host = 'ec2-176-34-193-128.eu-west-1.compute.amazonaws.com'
-conn = Mongo::Connection.new host
+def create_connection  
+  return Mongo::Connection.new '10.228.250.250', 27017, :pool_size => 20, :pool_timeout => 5 
+end
+
+conn = create_connection
 db = conn.db "nosql_perf"
 
+
+
 insert_benchmark = -> do 
-  thread_count = 2
+  thread_count = 64
   threads = []
   
   page_size = postal_codes.length / thread_count
   
   (0..thread_count).each do |i|
     threads[i] = Thread.new do
-      tconn = Mongo::Connection.new host
+      tconn = create_connection
       tdb = conn.db "nosql_perf"
       
       lower_limit = i * page_size
@@ -30,7 +35,7 @@ insert_benchmark = -> do
       key = i * page_size + 1
       postal_codes[lower_limit..upper_limit].each do |postal_code|
         postal_code['_id'] = key
-        tdb["postal_codes"].insert postal_code 
+        result = tdb["postal_codes"].insert postal_code 
         key += 1
       end 
     end
@@ -38,14 +43,14 @@ insert_benchmark = -> do
 end
 
 query_benchmark = -> do
-  thread_count = 2
+  thread_count = 64
   threads = []
   
   page_size = postal_codes.length / thread_count
   
   (0..thread_count).each do |i|
     threads[i] = Thread.new do
-      tconn = Mongo::Connection.new host
+      tconn = create_connection
       tdb = conn.db "nosql_perf"
       
       lower_limit = i * page_size

@@ -55,7 +55,8 @@ module CTT
   end
   
   def self.load_postal_codes
-    dataset_size = 4000
+    #dataset_size = 4000
+    dataset_size = 10000
     file = File.open "data/todos_cp.txt", "r:iso-8859-1:utf-8"
     
     postal_codes = []
