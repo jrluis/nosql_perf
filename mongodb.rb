@@ -18,7 +18,7 @@ db = conn.db "nosql_perf"
 
 
 insert_benchmark = -> do 
-  thread_count = 64
+  thread_count = 2
   threads = []
   
   page_size = postal_codes.length / thread_count
@@ -43,7 +43,7 @@ insert_benchmark = -> do
 end
 
 query_benchmark = -> do
-  thread_count = 64
+  thread_count = 2
   threads = []
   
   page_size = postal_codes.length / thread_count

@@ -9,14 +9,14 @@ postal_codes = CTT::load_postal_codes
 postal_codes.collect! { |postal_code| postal_code.to_hash }
 
 def create_connection  
-  return Redis.new :host => "10.0.1.1", :port => 6380
+  return Redis.new :host => "10.48.237.224", :port => 6379
 end
 
 conn = create_connection
 conn.select 'nosql_perf'
 
 insert_benchmark = -> do 
-  thread_count = 64
+  thread_count = 2
   threads = []
   
   page_size = postal_codes.length / thread_count
@@ -40,7 +40,7 @@ insert_benchmark = -> do
 end
 
 query_benchmark = -> do
-  thread_count = 64
+  thread_count = 2
   threads = []
   
   page_size = postal_codes.length / thread_count
@@ -67,7 +67,6 @@ puts "Benchmarking"
 
 Benchmark.bm 7 do |b|
   (1...10).each do |run|
-    db.drop_collection "postal_codes"
     b.report("i: #{run}") { insert_benchmark.call }
     b.report("q: #{run}") { query_benchmark.call }
   end 

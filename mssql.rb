@@ -23,7 +23,7 @@ result = client.execute "use nosql_perf"
 result.do
 
 insert_benchmark = -> do  
-  thread_count = 64
+  thread_count = 2
   threads = []
   
   page_size = postal_codes.length / thread_count
@@ -60,7 +60,7 @@ insert_benchmark = -> do
 end
 
 query_benchmark = -> do
-  thread_count = 64
+  thread_count = 2
   threads = []
   
   page_size = postal_codes.length / thread_count
